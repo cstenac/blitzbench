@@ -1,0 +1,69 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="blitzbench" default="war">
+    <property name="ivy.install.version" value="2.0.0-beta1"/>
+    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+
+    <property name="build.dir" value="build"/>
+    <property name="build.swar.tmp" value="build/slavewar-tmp"/>
+
+    <property name="ilib.dir" value="lib"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="src.dir" value="src/main/java"/>
+
+    <property name="swar.file" value="blitzbenchslave.war" />
+
+    <target name="clean">
+      <delete dir="${build.dir}" />
+      <delete dir="${dist.dir}" />
+      <delete dir="${ilib.dir}" />
+    </target>
+
+    <target name="download-ivy" unless="skip.download">
+        <mkdir dir="${ivy.jar.dir}"/>
+        <echo message="installing ivy..."/>
+        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+    <target name="install-ivy" depends="download-ivy" description="--> install ivy">
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>
+
+    <target name="resolve"  depends="install-ivy" description="--> retrieve dependencies with ivy">
+        <ivy:retrieve pattern="${ilib.dir}/[conf]/[artifact]-[revision].[ext]" />
+    </target>
+
+
+    <path id="build.libpath">
+        <fileset dir="${ilib.dir}/core" />
+  	</path>
+
+    <target name="compile" depends="resolve">
+        <mkdir dir="${build.dir}/classes" />
+	    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="build.libpath" />
+    </target>
+
+    <target name="war" depends="compile">
+      <delete dir="${build.swar.tmp}" />
+      <mkdir dir="${build.swar.tmp}" />
+      <copy todir="${build.swar.tmp}">
+        <fileset dir="src/main/slavewar" />
+      </copy>
+
+     <mkdir dir="${build.swar.tmp}/WEB-INF/lib" />
+       <copy todir="${build.swar.tmp}/WEB-INF/lib">
+        <fileset dir="${ilib.dir}/core" />
+      </copy>
+      <copy todir="${build.swar.tmp}/WEB-INF/classes">
+        <fileset dir="${build.dir}/classes" />
+      </copy>
+      <copy todir="${build.swar.tmp}/WEB-INF/classes">
+        <fileset file="src/main/java/log4j.properties" />
+      </copy>
+      <mkdir dir="${dist.dir}" />
+      <war destfile="${dist.dir}/${war.file}" basedir="${build.war.tmp}" />
+    </target>
+
+
+</project>
