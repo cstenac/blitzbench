@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 /** Thread emulating the behaviour of one client */
 public class UserThread extends Thread {
     WorkMessage work;
-    SimpleUserStats stats = new SimpleUserStats();
+    UserStats stats = new UserStats();
     int threadId;
 
     public void run()  {

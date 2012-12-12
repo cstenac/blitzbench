@@ -38,9 +38,23 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class InstanceManager {
-
-
+    static class RequestedRegion {
+        String region;
+        String requestedType;
+        int requestedInstances;
+        String spotPrice;
+        
+        List<String> requestIds = new ArrayList<String>();
+    }
+    
+    static class RequestedConfig {
+        
+    }
+    
     public static void main(String[] args) throws Exception {
+        
+        
+        
         AWSCredentials cred = new BasicAWSCredentials(FileUtils.readFileToString(new File("/data/homes/stenac/ec2/access")).replace("\n", ""),
                 FileUtils.readFileToString(new File("/data/homes/stenac/ec2/secret")).replace("\n", ""));
         AmazonEC2 ec2 = new AmazonEC2Client(cred);

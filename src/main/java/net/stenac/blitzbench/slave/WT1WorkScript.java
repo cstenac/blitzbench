@@ -1,12 +1,8 @@
 package net.stenac.blitzbench.slave;
 
 
-import java.io.InputStream;
 import java.net.URLEncoder;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
 /**
@@ -28,9 +24,9 @@ public class WT1WorkScript extends WorkScript{
         
         
         for (int i = 0 ; i < message.requestsPerUser; i++) {
-            System.out.println("Perform");
+//            System.out.println("Perform");
             performAndLogRequest("track", get);
-            if (i % 10 == 0) {
+            if (i % 100 == 0) {
                 System.out.println("Disconnect");
                 disconnect();
             }

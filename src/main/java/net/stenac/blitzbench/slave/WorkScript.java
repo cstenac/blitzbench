@@ -11,22 +11,23 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.CoreConnectionPNames;
 
 public abstract class WorkScript {
     WorkMessage message;
-    SimpleUserStats stats;
+    UserStats stats;
     HttpClient httpclient;
     ClientConnectionManager cm;
-    
+
     public void disconnect() {
         cm.shutdown();
         init();
     }
-    
+
     public void init() {
-        cm = new SingleClientConnManager();
+        cm = new BasicClientConnectionManager();
         httpclient = new DefaultHttpClient(cm);
         httpclient.getParams()
         .setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 30000)
@@ -49,15 +50,11 @@ public abstract class WorkScript {
             IOUtils.toByteArray(is);
             is.close();
             long atEnd = System.nanoTime();
-            //            if (i % 50 == 0) {
-            //                System.out.println("t=" + threadId + " i=" + i + " c=" + code + " head=" + (atCode-before)/1000 + " body=" + (atEnd-atCode)/1000);
-            //            }
-
-            stats.addRequest(type, (atCode-before)/1000, (atEnd-atCode)/1000);
+            stats.addRequest(type, code==200, (atCode-before)/1000, (atEnd-atCode)/1000);
         } catch (Exception e) {
-           e.printStackTrace();
+            stats.addRequest(type, false, 0, 0);
         }
     }
-    
+
     public abstract void work(String baseURL) throws Exception;
 }
