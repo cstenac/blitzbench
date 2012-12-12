@@ -62,7 +62,7 @@
         <fileset file="src/main/java/log4j.properties" />
       </copy>
       <mkdir dir="${dist.dir}" />
-      <war destfile="${dist.dir}/${war.file}" basedir="${build.war.tmp}" />
+      <war destfile="${dist.dir}/${swar.file}" basedir="${build.swar.tmp}" />
     </target>
 
 
